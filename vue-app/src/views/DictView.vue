@@ -14,10 +14,14 @@
         class="m-4"
       ></b-input>
       <b-button @click="addNewWord" class="m-4">Добавить</b-button>
+      <b-button @click="deleteWords" class="m-4">Удалить</b-button>
     </div>
     <b-table
       :data="storage.items"
       :columns="columns"
+      :checked-rows.sync="checkedRows"
+      checkable
+      checkbox-position="left"
       bordered
       class="mx-4"
     ></b-table>
@@ -32,7 +36,7 @@ import axios from "axios";
 @Component({
   components: {},
 })
-export default class HomeView extends Vue {
+export default class DictView extends Vue {
   storage = storage;
   newWord: string | null = null;
   newTranslation: string | null = null;
@@ -41,6 +45,8 @@ export default class HomeView extends Vue {
     { field: "Word", label: "Слово", centered: true },
     { field: "Translation", label: "Перевод", centered: true },
   ];
+
+  checkedRows: [] = [];
 
   mounted() {
     if (storage.items.length == 0) {
@@ -69,6 +75,21 @@ export default class HomeView extends Vue {
 
     this.newWord = null;
     this.newTranslation = null;
+  }
+
+  deleteWords() {
+    if (this.checkedRows && this.checkedRows.length !== 0) {
+      axios.post(
+        "http://localhost:43692/api/info/deleterecords",
+        this.checkedRows.map((q: any) => q.Id)
+      );
+
+      storage.items = storage.items.filter(
+        (q: any) => !this.checkedRows.map((w: any) => w.Id).includes(q.Id)
+      );
+
+      this.checkedRows = [];
+    }
   }
 }
 </script>

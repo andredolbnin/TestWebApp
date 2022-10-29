@@ -2,6 +2,7 @@ using System.Collections.Generic;
 
 using System.Linq;
 using System.Threading.Tasks;
+using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace DataAccessLib
@@ -26,6 +27,13 @@ namespace DataAccessLib
         public async Task AddRecord(Record record)
         {
             await _collection.InsertOneAsync(record);
+        }
+
+        public async Task DeleteRecords(string[] ids)
+        {
+            var realIds = ids.Where(q => q != null).Select(q => ObjectId.Parse(q)).ToArray();
+            var filter = Builders<Record>.Filter.Where(q => realIds.Contains(q.Id));
+            await _collection.DeleteManyAsync(filter);
         }
     }
 }

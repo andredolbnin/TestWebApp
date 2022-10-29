@@ -40,6 +40,12 @@ namespace WebApp.Controllers
                 CreateDateTime = DateTime.Now
             });
         }
+
+        [HttpPost("DeleteRecords")]
+        public async Task DeleteRecords([FromBody] string[] ids)
+        {
+            await _recordsRepo.DeleteRecords(ids);
+        }
     }
 }
 
